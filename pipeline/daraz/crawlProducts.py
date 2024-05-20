@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
 
 options = Options()
 options.add_argument('--no-sandbox')
@@ -16,6 +17,20 @@ driver = webdriver.Chrome(options=options)
 
 print("running")
 driver.get('https://www.daraz.com.bd/smartphones/')
-html = driver.page_source
-print(html)
+totalProducts = driver.find_element(By.XPATH, "//div[@class=' tips--QRnmZ']//span[1]").text
+totalProducts = totalProducts.replace(" items found for", "")
+totalProducts = int(totalProducts)
+print(totalProducts)
+
+products = driver.find_elements(By.ID, "id-a-link")
+productPagesCount = int(totalProducts / len(products)) + 1
+print(productPagesCount)
 driver.quit()
+
+for i in range(1, productPagesCount):
+    driver = webdriver.Chrome(options=options)
+    driver.get(f'https://www.daraz.com.bd/smartphones/?page={i}')
+    products = driver.find_elements(By.ID, "id-a-link")
+    for product in products:
+        print(product.get_attribute("href"))
+    driver.quit()
