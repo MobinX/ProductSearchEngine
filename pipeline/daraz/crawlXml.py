@@ -31,7 +31,8 @@ for element in root.iter():
 
 
 # Extract category names from the links
-category_names = [link.split("/")[-1] for link in categories]
+category_names = [link.split("/")[3] for link in categories]
+print (category_names)
 
 # Create a dictionary with the category names
 data = {"categories": category_names}
