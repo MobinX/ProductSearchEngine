@@ -10,7 +10,6 @@ xata = XataClient(api_key="xau_vhTUq5SIpC2R5u7ua6zDHPKjQhkpGT9e2",db_url="https:
 skippedCategories = [
     "medicine-hospital-dental-equipments",
     "microwave",
-    "productLinks",
     "stand-fan",
     "vacuum-cleaners"
 ]
