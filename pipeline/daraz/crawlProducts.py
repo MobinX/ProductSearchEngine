@@ -3,8 +3,35 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import json
 from xata.client import XataClient
+import re
 
 xata = XataClient(api_key="xau_vhTUq5SIpC2R5u7ua6zDHPKjQhkpGT9e2",db_url="https://Mobin-Chowdhury-s-workspace-eh41hn.us-east-1.xata.sh/db/productSearch:main")
+
+skippedCategories = [
+    "medicine-hospital-dental-equipments",
+    "microwave",
+    "productLinks",
+    "stand-fan",
+    "vacuum-cleaners"
+]
+
+def remove_special_characters(word):
+    # Remove special characters and replace with space
+   stri = ''.join(letter for letter in word if letter.isalnum())
+   return stri
+
+def to_camel_case(text):
+    s = text.replace("-", " ").replace("_", " ")
+    s = s.split()
+    if len(s) == 0:
+        return text
+    return s[0] + ''.join(i.capitalize() for i in s[1:])
+
+
+# # Usage example:
+# category = "stand-$&-%-fan$${}"
+# camel_case_category = to_camel_case(remove_special_characters(category))
+# print(camel_case_category)
 
 def uploadProductLinks(table_name, productLink):
     table_schema = {
@@ -54,7 +81,10 @@ result = {}
 with open('../../store/daraz-categories.json') as file:
     data = json.load(file)
     categories = data.get('categories')
+    for category in skippedCategories:
+        categories.remove(category)
     for category in categories:
+        print(f'Category: {category} converted to {to_camel_case(remove_special_characters(category))}')
         url = f'https://www.daraz.com.bd/{category}/'
         print(f"Processing category: {category}")
         driver.get(url)
@@ -74,7 +104,7 @@ with open('../../store/daraz-categories.json') as file:
             products = driver.find_elements(By.ID, "id-a-link")
             for product in products:
                 productLinks.append(product.get_attribute("href"))
-                uploadProductLinks(category, product.get_attribute("href"))
+                uploadProductLinks(to_camel_case(remove_special_characters(category)), product.get_attribute("href"))
                 print(product.get_attribute("href"))
         result[category] = productLinks
 
