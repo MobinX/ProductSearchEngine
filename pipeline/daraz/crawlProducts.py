@@ -11,7 +11,8 @@ skippedCategories = [
     "medicine-hospital-dental-equipments",
     "microwave",
     "stand-fan",
-    "vacuum-cleaners"
+    "vacuum-cleaners",
+    "humidifierpartsaccessories"
 ]
 
 def remove_special_characters(word):
@@ -107,9 +108,9 @@ with open('../../store/daraz-categories.json') as file:
                 productLinks.append(product.get_attribute("href"))
                 uploadProductLinks(to_camel_case(remove_special_characters(category)), product.get_attribute("href"))
                 print(product.get_attribute("href"))
-        print(f"Total Main products: {totalMainProducts + len(totalProducts)}")
-        totalMainProducts += len(totalProducts)
-        uploadProductLinks("total_products", str(totalProducts))
+        # print(f"Total Main products: {totalMainProducts + totalProducts}")
+        # totalMainProducts += totalProducts
+        # uploadProductLinks("total_products", str(totalProducts))
         result[category] = productLinks
 
 
