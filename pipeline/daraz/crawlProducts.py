@@ -76,6 +76,8 @@ options.add_argument("--disable-dev-shm-usage");
 driver = webdriver.Chrome(options=options)
 
 result = {}
+
+totalMainProducts = 0
 # Open and parse JSON file
 with open('../../store/daraz-categories.json') as file:
     data = json.load(file)
@@ -105,6 +107,9 @@ with open('../../store/daraz-categories.json') as file:
                 productLinks.append(product.get_attribute("href"))
                 uploadProductLinks(to_camel_case(remove_special_characters(category)), product.get_attribute("href"))
                 print(product.get_attribute("href"))
+        print(f"Total Main products: {totalMainProducts + len(totalProducts)}")
+        totalMainProducts += len(totalProducts)
+        uploadProductLinks("total_products", str(totalProducts))
         result[category] = productLinks
 
 
