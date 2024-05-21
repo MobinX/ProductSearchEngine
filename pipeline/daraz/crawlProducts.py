@@ -12,7 +12,7 @@ skippedCategories = [
     "microwave",
     "stand-fan",
     "vacuum-cleaners",
-    "humidifierpartsaccessories"
+    "humidifier-parts-&-accessories"
 ]
 
 def remove_special_characters(word):
