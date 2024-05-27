@@ -4,6 +4,8 @@ from selenium.webdriver.common.by import By
 import json
 from xata.client import XataClient
 import re
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 xata = XataClient(api_key="xau_vhTUq5SIpC2R5u7ua6zDHPKjQhkpGT9e2",db_url="https://Mobin-Chowdhury-s-workspace-eh41hn.us-east-1.xata.sh/db/productSearch:main")
 
@@ -79,8 +81,33 @@ options.add_argument("--disable-dev-shm-usage");
 driver = webdriver.Chrome(options=options)
 
 driver.get("https://www.daraz.com.bd/products/m90-pro-tws-earphones-hd-voice-noise-cancelling-bluetooth-earbuds-elevate-your-audio-with-unparalleled-sound-experience-i316286345-s1430881096.html?spm=a2a0e.home.flashSale.7.14fe12f7Ru5VlR")
+name = driver.find_element(By.CLASS_NAME, "pdp-mod-product-badge-title").text
+#scroll down to page half
+driver.execute_script("window.scrollTo(0, document.body.scrollHeight/3);")
+
+print(driver.get_screenshot_as_file("test.png"))
+price = driver.find_element(By.XPATH, "//span[contains(@class,'pdp-price pdp-price_type_normal')]").text
+# rating = driver.find_element(By.CLASS_NAME, "review-header").text 
 desc = driver.find_element(By.XPATH, "//div[@class='html-content pdp-product-highlights']").text
-print(desc)
+details = driver.find_element(By.XPATH, "//div[@class='html-content detail-content']").text
+try:
+    discount = driver.find_element(By.CLASS_NAME, "pdp-product-price__discount").text
+except:
+    discount = "0%"
+full_text = f'''
+name: {name}
+price: {price}
+discount: {discount}
+
+description:
+{desc}
+
+details:
+{details}
+
+'''
+
+print(full_text)
 result = {}
 
 # def addInErrorProducts(category, productLink):
