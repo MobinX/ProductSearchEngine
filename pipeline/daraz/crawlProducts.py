@@ -9,6 +9,8 @@ from xata.client import XataClient
 import re
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from threading import Timer
+
 
 startExecutionTime = datetime.now()
 maxTimeout = 60 # 60s
@@ -502,6 +504,11 @@ def getLastPageCount():
 
 # **** Main Segment ****
 # Open and parse JSON file
+outCategory = ""
+outPageCount = ""
+
+t = Timer(25, startGithubWorkflow)
+t.start()
 isDriverOpen = False
 with open('../../store/daraz-categories.json') as file:
     
@@ -570,6 +577,8 @@ with open('../../store/daraz-categories.json') as file:
             
             
             for i in range(lastPageCount["lastPageCount"] +1, int(productPagesCount)+1):
+                outCategory = category
+                outPageCount = i
                 if not isDriverOpen:
                     isDriverOpen = True
                     driver = webdriver.Chrome(options=options)
