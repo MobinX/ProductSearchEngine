@@ -8,6 +8,7 @@ on:
     types:
     - created
   repository_dispatch:
+    types: [upload_products]
 
 jobs:
   build:

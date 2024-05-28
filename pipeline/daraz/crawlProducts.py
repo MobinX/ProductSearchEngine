@@ -425,7 +425,7 @@ def startGithubWorkflow():
             "Authorization": "Bearer " + os.environ.get("TOKEN")
         }
         data = {
-            # "event_type":"upload_products"
+            "event_type":"upload_products"
         }
         response = requests.post(url, headers=headers, json=data)
         print(response.json())
@@ -494,7 +494,9 @@ def getLastPageCount():
 # **** Main Segment ****
 # Open and parse JSON file
 isDriverOpen = False
+startGithubWorkflow()
 with open('../../store/daraz-categories.json') as file:
+    
     data = json.load(file)
     categories = data.get('categories')
     #organize the categories alphabetically
