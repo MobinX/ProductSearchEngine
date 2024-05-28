@@ -423,27 +423,24 @@ def getTotalWorkflowRun():
 
 isGithubWorkFlowStarted = False
 def startGithubWorkflow():
-    
-    try:
-        if not isGithubWorkFlowStarted:
-            totalWorkflowRun = getTotalWorkflowRun()
-            totalWorkflowRun += 1
-            updateTotalWorkflowRun(totalWorkflowRun)
-            url = "https://api.github.com/repos/MobinX/ProductSearchEngine/dispatches"
-            headers = {
-                "Accept": "application/vnd.github.v3+json",
-                "Authorization": "Bearer " + os.environ.get("TOKEN")
-            }
-            data = {
-                "event_type":"upload_products"
-            }
-            response = requests.post(url, headers=headers, json=data)
-            print(response.json())
-            isGithubWorkFlowStarted = True
-    except Exception as e:
-        print(f"Error starting workflow: {str(e)}")
-        return False
+    print("Starting Github Workflow")
+    totalWorkflowRun = getTotalWorkflowRun()
+    totalWorkflowRun += 1
+    updateTotalWorkflowRun(totalWorkflowRun)
+    url = "https://api.github.com/repos/MobinX/ProductSearchEngine/dispatches"
+    headers = {
+        "Accept": "application/vnd.github.v3+json",
+        "Authorization": "Bearer " + os.environ.get("TOKEN")
+    }
+    data = {
+        "event_type":"upload_products"
+    }
+    response = requests.post(url, headers=headers, json=data)
+    print(response.text)
 
+    # print(f"Error starting workflow: {str(e)}")
+
+# startGithubWorkflow()
 
 def setLastPageCount(category, lastPageCount):
     table_name = "last_page_countx"
