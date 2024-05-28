@@ -16,7 +16,7 @@ startExecutionTime = datetime.now()
 maxTimeout = 60 # 60s
 
 
-xata = XataClient(api_key="xau_vhTUq5SIpC2R5u7ua6zDHPKjQhkpGT9e2",db_url="https://Mobin-Chowdhury-s-workspace-eh41hn.us-east-1.xata.sh/db/productSearch:main")
+xata = XataClient(api_key="xau_vhTUq5SIpC2R5u7ua6zDHPKjQhkpGT9e2",db_url="https://Mobin-Chowdhury-s-workspace-eh41hn.us-east-1.xata.sh/db/products:main")
 
 skippedCategories = [
     "medicine-hospital-dental-equipments",
@@ -122,18 +122,31 @@ def uploadProductLinks(table_name, productLink):
         record = {
             "link": productLink
          }
-        respi = xata.records().insert(table_name, record)
+        respi = xata.records().insert_with_id(table_name,table_name, record)
         assert respi.is_success(), respi
     except AssertionError as error:
-        
-        record = {
-            "link": productLink
-         }
-        respi = xata.records().insert(table_name, record)
-        assert respi.is_success(), respi
+        print(f"Error creating prlink table: {str(error)}")
+        try:
+            record = {
+                "link": productLink
+            }
+            respi = xata.records().insert_with_id(table_name, table_name,  record)
+            assert respi.is_success(), respi
+        except AssertionError as error:
+            print(f"Error inserting prLink record: {str(error)}")
+            print("Trying to update the record")
+            try:
+                record = {
+                "link": productLink
+                }
+                respi = xata.records().update(table_name, table_name, record)
+                assert respi.is_success(), respi
+            except AssertionError as update_error:
+                print(f"Error updating record: {str(update_error)}")
         
 
 def uploadProduct(table_name, main_img, name,price,imges,info,category):
+    print(f"Uploading product: {name}")
     table_schema = {
         "columns": [
             {
@@ -177,20 +190,38 @@ def uploadProduct(table_name, main_img, name,price,imges,info,category):
             "info": info,
             "category": category
          }
-        respi = xata.records().insert(table_name, record)
+        respi = xata.records().insert_with_id(table_name, category, record)
         assert respi.is_success(), respi
     except AssertionError as error:
-        
-        record = {
-            "main_img": main_img,
-            "name": name,
-            "price": price,
-            "imges": imges,
-            "info": info,
-            "category": category
-         }
-        respi = xata.records().insert(table_name, record)
-        assert respi.is_success(), respi
+        print(f"Error creating product table: {str(error)}")
+        try:
+            record = {
+                "main_img": main_img,
+                "name": name,
+                "price": price,
+                "imges": imges,
+                "info": info,
+                "category": category
+            }
+            respi = xata.records().insert_with_id(table_name,category ,record)
+            assert respi.is_success(), respi
+        except AssertionError as error:
+            print(f"Error inserting product record: {str(error)}")
+            print("Trying to update the record")
+            try:
+                # Update the existing record in the database
+                record = {
+                "main_img": main_img,
+                "name": name,
+                "price": price,
+                "imges": imges,
+                "info": info,
+                "category": category
+                }
+                respu = xata.records().update(table_name, category, record)
+                assert respu.is_success(), respu
+            except AssertionError as error:
+                print(f"Error inserting/updating record: {str(error)}")
 
 
 
@@ -504,7 +535,7 @@ def getLastPageCount():
 outCategory = ""
 outPageCount = ""
 
-t = Timer(25, startGithubWorkflow)
+t = Timer(7100, startGithubWorkflow)
 t.start()
 isDriverOpen = False
 with open('../../store/daraz-categories.json') as file:
@@ -585,20 +616,20 @@ with open('../../store/daraz-categories.json') as file:
                 productImgLinks = []
                 products = driver.find_elements(By.ID, "id-a-link")
                 #check time if there is 10s remaining
-                if (datetime.now() - startExecutionTime).seconds > (maxTimeout - 30):
-                    print("Timeout reached. Exiting And Creating New One..")
-                    setLastPageCount(category, i)
+                # if (datetime.now() - startExecutionTime).seconds > (maxTimeout - 30):
+                #     print("Timeout reached. Exiting And Creating New One..")
+                #     setLastPageCount(category, i)
 
-                    startGithubWorkflow()
-                    break
+                #     startGithubWorkflow()
+                #     break
                 for product in products:
                     try:
                         print(f'total passed time: {(datetime.now() - startExecutionTime).seconds}')
-                        if (datetime.now() - startExecutionTime).seconds > (maxTimeout - 30):
-                            print("Timeout reached. Exiting And Creating New One..")
-                            setLastPageCount(category, i)
-                            startGithubWorkflow()
-                            break
+                        # if (datetime.now() - startExecutionTime).seconds > (maxTimeout - 30):
+                        #     print("Timeout reached. Exiting And Creating New One..")
+                        #     setLastPageCount(category, i)
+                        #     startGithubWorkflow()
+                        #     break
                         productLinks.append(product.get_attribute("href"))
                         uploadProductLinks((f'{remove_special_characters(category)}-links'), product.get_attribute("href"))
                         img = product.find_element(By.TAG_NAME, "img").get_attribute("src")
@@ -611,19 +642,19 @@ with open('../../store/daraz-categories.json') as file:
                         print(f"Error processing product: {str(e)}")
                         addInErrorProducts(category, product.get_attribute("href"))
                         continue
-                if (datetime.now() - startExecutionTime).seconds > (maxTimeout - 30):
-                    print("Timeout reached. Exiting And Creating New One..")
-                    setLastPageCount(category, i)
+                # if (datetime.now() - startExecutionTime).seconds > (maxTimeout - 30):
+                #     print("Timeout reached. Exiting And Creating New One..")
+                #     setLastPageCount(category, i)
                     
-                    startGithubWorkflow()
-                    break
+                #     startGithubWorkflow()
+                #     break
                 for iLink in range(len(productLinks)):
-                    if (datetime.now() - startExecutionTime).seconds > (maxTimeout - 30):
-                        print("Timeout reached. Exiting And Creating New One..")
-                        setLastPageCount(category, i)
+                    # if (datetime.now() - startExecutionTime).seconds > (maxTimeout - 30):
+                    #     print("Timeout reached. Exiting And Creating New One..")
+                    #     setLastPageCount(category, i)
                     
-                        startGithubWorkflow()
-                        break
+                    #     startGithubWorkflow()
+                    #     break
                     try:
                         driver.get(productLinks[iLink])
                         try:

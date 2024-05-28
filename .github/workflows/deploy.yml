@@ -16,7 +16,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 1
+    timeout-minutes: 120
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -33,7 +33,7 @@ jobs:
    
       
     - name: Upload Products
-      run: cd pipeline/daraz
+      run: cd pipeline/daraz && python crawlProducts.py
       env:
         TOKEN: ${{ secrets.TOKEN }}
     
