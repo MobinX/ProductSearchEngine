@@ -1,3 +1,4 @@
+import datetime
 import os
 import requests
 from selenium import webdriver
@@ -8,6 +9,10 @@ from xata.client import XataClient
 import re
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+startExecutionTime = datetime.now()
+maxTimeout = 60 # 60s
+
 
 xata = XataClient(api_key="xau_vhTUq5SIpC2R5u7ua6zDHPKjQhkpGT9e2",db_url="https://Mobin-Chowdhury-s-workspace-eh41hn.us-east-1.xata.sh/db/productSearch:main")
 
@@ -494,7 +499,6 @@ def getLastPageCount():
 # **** Main Segment ****
 # Open and parse JSON file
 isDriverOpen = False
-startGithubWorkflow()
 with open('../../store/daraz-categories.json') as file:
     
     data = json.load(file)
@@ -564,6 +568,11 @@ with open('../../store/daraz-categories.json') as file:
                 productLinks = []
                 productImgLinks = []
                 products = driver.find_elements(By.ID, "id-a-link")
+                #check time if there is 10s remaining
+                if (datetime.now() - startExecutionTime).seconds > (maxTimeout - 10):
+                    print("Timeout reached. Exiting And Creating New One..")
+                    startGithubWorkflow()
+                    break
                 for product in products:
                     try:
                         productLinks.append(product.get_attribute("href"))
@@ -578,6 +587,10 @@ with open('../../store/daraz-categories.json') as file:
                         print(f"Error processing product: {str(e)}")
                         addInErrorProducts(category, product.get_attribute("href"))
                         continue
+                if (datetime.now() - startExecutionTime).seconds > (maxTimeout - 10):
+                    print("Timeout reached. Exiting And Creating New One..")
+                    startGithubWorkflow()
+                    break
                 for iLink in range(len(productLinks)):
                     try:
                         driver.get(productLinks[iLink])
