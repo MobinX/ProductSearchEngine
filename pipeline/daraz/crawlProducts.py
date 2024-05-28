@@ -16,7 +16,7 @@ startExecutionTime = datetime.now()
 maxTimeout = 60 # 60s
 
 
-xata = XataClient(api_key="xau_vhTUq5SIpC2R5u7ua6zDHPKjQhkpGT9e2",db_url="https://Mobin-Chowdhury-s-workspace-eh41hn.us-east-1.xata.sh/db/products:main")
+xata = XataClient(api_key="xau_rlFnRvLQxFb8zvBrPBJiqRhtIZ7VeliP0",db_url="https://Mobin-Chowdhury-s-workspace-eh41hn.us-east-1.xata.sh/db/productList:main")
 
 skippedCategories = [
     "medicine-hospital-dental-equipments",
@@ -78,6 +78,7 @@ def uploadCategorySeo(category, meta_title, meta_description):
         respi = xata.records().insert_with_id(table_name, category, record)
         assert respi.is_success(), respi
     except AssertionError as error:
+        print(str(error))
         print(f"Error creating table: {str(error)}")
         try:
             record = {
