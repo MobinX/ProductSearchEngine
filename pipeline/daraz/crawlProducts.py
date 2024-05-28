@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import os
 import requests
 from selenium import webdriver
@@ -569,12 +569,16 @@ with open('../../store/daraz-categories.json') as file:
                 productImgLinks = []
                 products = driver.find_elements(By.ID, "id-a-link")
                 #check time if there is 10s remaining
-                if (datetime.now() - startExecutionTime).seconds > (maxTimeout - 10):
+                if (datetime.now() - startExecutionTime).seconds > (maxTimeout - 30):
                     print("Timeout reached. Exiting And Creating New One..")
                     startGithubWorkflow()
                     break
                 for product in products:
                     try:
+                        if (datetime.now() - startExecutionTime).seconds > (maxTimeout - 10):
+                            print("Timeout reached. Exiting And Creating New One..")
+                            startGithubWorkflow()
+                            break
                         productLinks.append(product.get_attribute("href"))
                         uploadProductLinks((f'{remove_special_characters(category)}-links'), product.get_attribute("href"))
                         img = product.find_element(By.TAG_NAME, "img").get_attribute("src")
