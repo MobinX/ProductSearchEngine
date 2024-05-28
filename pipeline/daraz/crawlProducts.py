@@ -419,21 +419,25 @@ def getTotalWorkflowRun():
     except AssertionError as error:
         return 0
 
+isGithubWorkFlowStarted = False
 def startGithubWorkflow():
-    totalWorkflowRun = getTotalWorkflowRun()
-    totalWorkflowRun += 1
-    updateTotalWorkflowRun(totalWorkflowRun)
+    
     try:
-        url = "https://api.github.com/repos/MobinX/ProductSearchEngine/dispatches"
-        headers = {
-            "Accept": "application/vnd.github.v3+json",
-            "Authorization": "Bearer " + os.environ.get("TOKEN")
-        }
-        data = {
-            "event_type":"upload_products"
-        }
-        response = requests.post(url, headers=headers, json=data)
-        print(response.json())
+        if not isGithubWorkFlowStarted:
+            totalWorkflowRun = getTotalWorkflowRun()
+            totalWorkflowRun += 1
+            updateTotalWorkflowRun(totalWorkflowRun)
+            url = "https://api.github.com/repos/MobinX/ProductSearchEngine/dispatches"
+            headers = {
+                "Accept": "application/vnd.github.v3+json",
+                "Authorization": "Bearer " + os.environ.get("TOKEN")
+            }
+            data = {
+                "event_type":"upload_products"
+            }
+            response = requests.post(url, headers=headers, json=data)
+            print(response.json())
+            isGithubWorkFlowStarted = True
     except Exception as e:
         print(f"Error starting workflow: {str(e)}")
         return False
@@ -527,6 +531,12 @@ with open('../../store/daraz-categories.json') as file:
     print(f"Total categories: {len(categories)}")
     totalCategories = getTotalCategories()
     for category in categories:
+        # if (datetime.now() - startExecutionTime).seconds > (maxTimeout - 30):
+        #     print("Timeout reached. Exiting And Creating New One..")
+        #     setLastPageCount(category, i)
+
+        #     # startGithubWorkflow()
+        #     break
         try:
             print(f'Category: {category} converted to {remove_special_characters(category)}')
             url = f'https://www.daraz.com.bd/{category}/'
@@ -571,12 +581,16 @@ with open('../../store/daraz-categories.json') as file:
                 #check time if there is 10s remaining
                 if (datetime.now() - startExecutionTime).seconds > (maxTimeout - 30):
                     print("Timeout reached. Exiting And Creating New One..")
+                    setLastPageCount(category, i)
+
                     startGithubWorkflow()
                     break
                 for product in products:
                     try:
-                        if (datetime.now() - startExecutionTime).seconds > (maxTimeout - 10):
+                        print(f'total passed time: {(datetime.now() - startExecutionTime).seconds}')
+                        if (datetime.now() - startExecutionTime).seconds > (maxTimeout - 30):
                             print("Timeout reached. Exiting And Creating New One..")
+                            setLastPageCount(category, i)
                             startGithubWorkflow()
                             break
                         productLinks.append(product.get_attribute("href"))
@@ -591,11 +605,19 @@ with open('../../store/daraz-categories.json') as file:
                         print(f"Error processing product: {str(e)}")
                         addInErrorProducts(category, product.get_attribute("href"))
                         continue
-                if (datetime.now() - startExecutionTime).seconds > (maxTimeout - 10):
+                if (datetime.now() - startExecutionTime).seconds > (maxTimeout - 30):
                     print("Timeout reached. Exiting And Creating New One..")
+                    setLastPageCount(category, i)
+                    
                     startGithubWorkflow()
                     break
                 for iLink in range(len(productLinks)):
+                    if (datetime.now() - startExecutionTime).seconds > (maxTimeout - 30):
+                        print("Timeout reached. Exiting And Creating New One..")
+                        setLastPageCount(category, i)
+                    
+                        startGithubWorkflow()
+                        break
                     try:
                         driver.get(productLinks[iLink])
                         try:
