@@ -7,6 +7,7 @@ on:
   release:
     types:
     - created
+  repository_dispatch:
 
 jobs:
   build:
@@ -31,4 +32,6 @@ jobs:
       
     - name: Upload Products
       run: cd pipeline/daraz && python crawlProducts.py
+      env:
+        TOKEN: ${{ secrets.TOKEN }}
     

@@ -1,3 +1,5 @@
+import os
+import requests
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -37,6 +39,64 @@ def to_camel_case(text):
 # camel_case_category = to_camel_case(remove_special_characters(category))
 # print(camel_case_category)
 
+def uploadCategorySeo(category, meta_title, meta_description):
+    #create table or insert or update
+    table_name = "category_seo"
+    table_schema = {
+        "columns": [
+            {
+                "name": "category",
+                "type": "string",
+            },
+            {
+                "name": "meta_title",
+                "type": "string",
+            },
+            {
+                "name": "meta_description",
+                "type": "string",
+            },
+           
+        ]
+    }
+    try:
+        assert xata.table().create(table_name).is_success()
+        resp = xata.table().set_schema(table_name, table_schema)
+        assert resp.is_success(), resp
+        record = {
+                "category": category,
+                "meta_title": meta_title,
+                "meta_description": meta_description,
+            }
+        respi = xata.records().insert_with_id(table_name, category, record)
+        assert respi.is_success(), respi
+    except AssertionError as error:
+        print(f"Error creating table: {str(error)}")
+        try:
+            record = {
+                "category": category,
+                "meta_title": meta_title,
+                "meta_description": meta_description,
+                
+            }
+            respi = xata.records().insert_with_id(table_name, category, record)
+            assert respi.is_success(), respi
+        except Exception as error:
+            print(f"Error inserting record: {str(error)}")
+            try:
+                record = {
+                    "category": category,
+                    "meta_title": meta_title,
+                    "meta_description": meta_description,
+                }
+                respi = xata.records().update(table_name, category, record)
+                assert respi.is_success(), respi
+            except Exception as error:
+                print(f"Error updating record: {str(error)}")
+                return False
+
+
+
 def uploadProductLinks(table_name, productLink):
     table_schema = {
         "columns": [
@@ -65,7 +125,68 @@ def uploadProductLinks(table_name, productLink):
         respi = xata.records().insert(table_name, record)
         assert respi.is_success(), respi
         
-    
+
+def uploadProduct(table_name, main_img, name,price,imges,info,category):
+    table_schema = {
+        "columns": [
+            {
+                "name": "main_img",
+                "type": "string",
+            },
+            {
+                "name": "name",
+                "type": "string",
+            },
+            {
+                "name": "price",
+                "type": "string",
+            },
+            {
+                "name": "imges",
+                "type": "string",
+            },
+            {
+                "name": "info",
+                "type": "string",
+            },
+           
+            {
+                "name": "category",
+                "type": "string",
+            },
+        ]
+    }
+    try:
+        
+        assert xata.table().create(table_name).is_success()
+        resp = xata.table().set_schema(table_name, table_schema)
+        assert resp.is_success(), resp
+         
+        record = {
+            "main_img": main_img,
+            "name": name,
+            "price": price,
+            "imges": imges,
+            "info": info,
+            "category": category
+         }
+        respi = xata.records().insert(table_name, record)
+        assert respi.is_success(), respi
+    except AssertionError as error:
+        
+        record = {
+            "main_img": main_img,
+            "name": name,
+            "price": price,
+            "imges": imges,
+            "info": info,
+            "category": category
+         }
+        respi = xata.records().insert(table_name, record)
+        assert respi.is_success(), respi
+
+
+
 # Open the browser
 options = Options()
 options.add_argument('--no-sandbox')
@@ -197,6 +318,122 @@ def getTotalProducts():
     except AssertionError as error:
         return 0
 
+def updateTotalCategories(totalCategories):
+    table_name = "total_categories"
+    table_schema = {
+        "columns": [
+            {
+                "name": "total_categories",
+                "type": "string",
+            },
+        ]
+    }
+    try:
+        assert xata.table().create(table_name).is_success()
+        resp = xata.table().set_schema(table_name, table_schema)
+        assert resp.is_success(), resp
+        record = {
+                "total_categories": str(totalCategories)
+            }
+        respi = xata.records().insert_with_id(table_name, table_name, record)
+        assert respi.is_success(), respi
+    except AssertionError as error:
+        try:
+            print(f"Error creating total categories: {str(error)}")
+            record = {
+                "total_categories": str(totalCategories)
+            }
+            respi = xata.records().insert_with_id(table_name, table_name, record)
+            assert respi.is_success(), respi
+        except Exception as error:
+            print(f"Error inserting total categories: {str(error)}")
+            try:
+                record = {
+                    "total_categories": str(totalCategories)
+                }
+                respi = xata.records().update(table_name, table_name, record)
+                assert respi.is_success(), respi
+            except Exception as error:
+                print(f"Error updating total categories: {str(error)}")
+                return False
+
+def getTotalCategories():
+    table_name = "total_categories"
+    try:
+        resp = xata.records().get(table_name,table_name)
+        assert resp.is_success(), resp
+        return int(resp['total_categories'])
+    except AssertionError as error:
+        return 0
+    
+def updateTotalWorkflowRun(totalWorkflowRun):
+    table_name = "total_workflow_run"
+    table_schema = {
+        "columns": [
+            {
+                "name": "total_workflow_run",
+                "type": "string",
+            },
+        ]
+    }
+    try:
+        assert xata.table().create(table_name).is_success()
+        resp = xata.table().set_schema(table_name, table_schema)
+        assert resp.is_success(), resp
+        record = {
+                "total_workflow_run": str(totalWorkflowRun)
+            }
+        respi = xata.records().insert_with_id(table_name, table_name, record)
+        assert respi.is_success(), respi
+    except AssertionError as error:
+        try:
+            print(f"Error creating total workflow run: {str(error)}")
+            record = {
+                "total_workflow_run": str(totalWorkflowRun)
+            }
+            respi = xata.records().insert_with_id(table_name, table_name, record)
+            assert respi.is_success(), respi
+        except Exception as error:
+            print(f"Error inserting total workflow run: {str(error)}")
+            try:
+                record = {
+                    "total_workflow_run": str(totalWorkflowRun)
+                }
+                respi = xata.records().update(table_name, table_name, record)
+                assert respi.is_success(), respi
+            except Exception as error:
+                print(f"Error updating total workflow run: {str(error)}")
+                return False
+            
+def getTotalWorkflowRun():
+    table_name = "total_workflow_run"
+    try:
+        resp = xata.records().get(table_name,table_name)
+        assert resp.is_success(), resp
+        return int(resp['total_workflow_run'])
+    except AssertionError as error:
+        return 0
+
+def startGithubWorkflow():
+    totalWorkflowRun = getTotalWorkflowRun()
+    totalWorkflowRun += 1
+    updateTotalWorkflowRun(totalWorkflowRun)
+    try:
+        url = "https://api.github.com/repos/MobinX/ProductSearchEngine/dispatches"
+        headers = {
+            "Accept": "application/vnd.github.v3+json",
+            "Authorization": "Bearer " + os.environ.get("TOKEN")
+        }
+        data = {
+            # "event_type":"upload_products"
+        }
+        response = requests.post(url, headers=headers, json=data)
+        print(response.json())
+    except Exception as e:
+        print(f"Error starting workflow: {str(e)}")
+        return False
+
+
 def setLastPageCount(category, lastPageCount):
     table_name = "last_page_countx"
     table_schema = {
@@ -282,7 +519,7 @@ with open('../../store/daraz-categories.json') as file:
     # for category in skippedCategories:
     #     categories.remove(category)
     print(f"Total categories: {len(categories)}")
-
+    totalCategories = getTotalCategories()
     for category in categories:
         try:
             print(f'Category: {category} converted to {remove_special_characters(category)}')
@@ -292,6 +529,15 @@ with open('../../store/daraz-categories.json') as file:
                 isDriverOpen = True
                 driver = webdriver.Chrome(options=options)
             driver.get(url)
+            #get meta data
+            try:
+                meta_title = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//title"))).get_attribute("text")
+                meta_description = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//meta[@name='description']"))).get_attribute("content")
+            except Exception as e:
+                print(f"Error getting meta data: {str(e)}")
+                meta_title = ""
+                meta_description = ""
+            uploadCategorySeo(remove_special_characters(category), meta_title, meta_description)
             # totalProducts = driver.find_element(By.XPATH, "(//div[@class=' tips--QRnmZ']//span)[1]").text
             # totalProducts = totalProducts.replace(" items found for", "")
             # totalProducts = totalProducts.replace(",", "")
@@ -370,7 +616,12 @@ with open('../../store/daraz-categories.json') as file:
                             mainImg = driver.find_element(By.CLASS_NAME, "gallery-preview-panel__image").get_attribute("src")
                         except:
                             mainImg = ""
+
                         
+                        
+                        #imgSrc array to , separated string
+                        imgSrc = ",".join(imgSrc)
+
                         full_text = f'''
                         name: {name}
                         price: {price}
@@ -381,7 +632,10 @@ with open('../../store/daraz-categories.json') as file:
                         {details}
                         img: {mainImg}
                         '''
-
+                        if name == "":
+                            print("Skipping product as name is empty")
+                            continue
+                        uploadProduct(remove_special_characters(category), mainImg, name, price, imgSrc, full_text, remove_special_characters(category))
                         print(full_text)
                     except Exception as e:
                         print(f"Error processing product: {str(e)}")
@@ -395,6 +649,8 @@ with open('../../store/daraz-categories.json') as file:
             # totalMainProducts += totalProducts
             # uploadProductLinks("total_products", str(totalProducts))
             result[category] = productLinks
+            totalCategories += 1
+            updateTotalCategories(totalCategories)
         except Exception as e:
             print(f"Error processing category {category}: {str(e)}")
             addInErrorCategories(category)
