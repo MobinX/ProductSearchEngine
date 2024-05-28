@@ -123,7 +123,7 @@ def uploadProductLinks(table_name, productLink):
         record = {
             "link": productLink
          }
-        respi = xata.records().insert_with_id(table_name,table_name, record)
+        respi = xata.records().insert_with_id(table_name,remove_special_characters(productLink), record)
         assert respi.is_success(), respi
     except AssertionError as error:
         print(f"Error creating prlink table: {str(error)}")
@@ -131,7 +131,7 @@ def uploadProductLinks(table_name, productLink):
             record = {
                 "link": productLink
             }
-            respi = xata.records().insert_with_id(table_name, table_name,  record)
+            respi = xata.records().insert_with_id(table_name, remove_special_characters(productLink),  record)
             assert respi.is_success(), respi
         except AssertionError as error:
             print(f"Error inserting prLink record: {str(error)}")
@@ -140,7 +140,7 @@ def uploadProductLinks(table_name, productLink):
                 record = {
                 "link": productLink
                 }
-                respi = xata.records().update(table_name, table_name, record)
+                respi = xata.records().update(table_name, remove_special_characters(productLink), record)
                 assert respi.is_success(), respi
             except AssertionError as update_error:
                 print(f"Error updating record: {str(update_error)}")
@@ -191,7 +191,7 @@ def uploadProduct(table_name, main_img, name,price,imges,info,category):
             "info": info,
             "category": category
          }
-        respi = xata.records().insert_with_id(table_name, category, record)
+        respi = xata.records().insert_with_id(table_name, remove_special_characters(name), record)
         assert respi.is_success(), respi
     except AssertionError as error:
         print(f"Error creating product table: {str(error)}")
@@ -204,7 +204,7 @@ def uploadProduct(table_name, main_img, name,price,imges,info,category):
                 "info": info,
                 "category": category
             }
-            respi = xata.records().insert_with_id(table_name,category ,record)
+            respi = xata.records().insert_with_id(table_name,remove_special_characters(name) ,record)
             assert respi.is_success(), respi
         except AssertionError as error:
             print(f"Error inserting product record: {str(error)}")
@@ -219,7 +219,7 @@ def uploadProduct(table_name, main_img, name,price,imges,info,category):
                 "info": info,
                 "category": category
                 }
-                respu = xata.records().update(table_name, category, record)
+                respu = xata.records().update(table_name, remove_special_characters(name), record)
                 assert respu.is_success(), respu
             except AssertionError as error:
                 print(f"Error inserting/updating record: {str(error)}")
@@ -536,7 +536,7 @@ def getLastPageCount():
 outCategory = ""
 outPageCount = ""
 
-t = Timer(7100, startGithubWorkflow)
+t = Timer(7101, startGithubWorkflow)
 t.start()
 isDriverOpen = False
 with open('../../store/daraz-categories.json') as file:
