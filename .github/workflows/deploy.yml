@@ -33,7 +33,7 @@ jobs:
    
       
     - name: Upload Products
-      run: cd pipeline/daraz && python crawlProducts.py
+      run: cd pipeline/daraz
       env:
         TOKEN: ${{ secrets.TOKEN }}
     
